@@ -230,5 +230,19 @@ bot.command('deletepost', (ctx) => {
 bot.on('text', (ctx) => {
     ctx.reply('Будь ласка, надішліть фотографію з підписом.');
 });
+app.post('/appointment', (req, res) => {
+    const { name, phone } = req.body;
 
+    if (!name || !phone) {
+        return res.status(400).send('Потрібно надіслати ім\'я та номер телефону');
+    }
+
+    // Використовуємо бота для відправки повідомлення з даними
+    bot.telegram.sendMessage(process.env.TELEGRAM_CHAT_ID, `Нова заявка на сеанс:\nІм'я: ${name}\nНомер телефону: ${phone}`)
+        .then(() => res.status(200).send('Заявка успішно відправлена'))
+        .catch((error) => {
+            console.error('Помилка відправки повідомлення:', error);
+            res.status(500).send('Помилка при відправці заявки');
+        });
+});
 bot.launch();
